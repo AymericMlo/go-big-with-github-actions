@@ -2,6 +2,11 @@ name: First Scraper
 
 on:
   workflow_dispatch:
+    inputs: #On va ajouter des possibilités de déclencher le scrape manuellement
+      state: #On va donner la possibilité de scraper pour un Etat donné. 
+        description: 'U.S. state to scrape'
+        required: true
+        defautl: 'ia' #Si pas d'input, on scrape les données pour l'Ohio. 
   schedule:
   - cron: "0 0 * * * #Les actions seront lancées tous les jours à 00:00 UTC
 
@@ -25,14 +30,17 @@ jobs:
         run: pip install warn-scraper
          
       - name: Scrape
-        run: warn-scraper ia --data-dir ./data/ #On scrape les données pour l'Iowa ("ia") et on stocke les résultats dans le dossier ./data/, à la racine du repo. 
+        run: warn-scraper ${{ inputs.state }} --data-dir ./data/ #On scrape l'Etat indiqué dans l'input utilisateur, plus haut. 
+        #run: warn-scraper ia --data-dir ./data/ #On scrape les données pour l'Iowa ("ia") et on stocke les résultats dans le dossier ./data/, à la racine du repo. 
+
+      - name: Save datestamp #En cas d'inactivité prolongée, GitHub désactive automatiquement les workflows. Pour prévenir ça, on commit et update un fichier texte à chaque fois que l'action tourne. 
+        run: date > ./data/latest-scrape.txt
         
       - name: Commit and push #On va commit les données scrappées et les pousser dans GitHub. 
-        run:
+        run:  |
           git config user.name "GitHub Actions"
           git config user.email "actions@users.noreply.github.com"
           git add ./data/
-          git commit -m "Latest data for Iowa" && git push || true
-
+          git commit -m "Latest data for ${{ inputs.state }}" && git push || true
        
   

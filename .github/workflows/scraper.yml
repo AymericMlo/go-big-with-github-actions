@@ -1,0 +1,35 @@
+name: First Scraper
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron: "0 0 * * * #Les actions seront lancées tous les jours à 00:00 UTC
+  
+jobs:
+  scrape:
+    name: Scrape
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout #Cela clone notre repository sur le serveur pour que toutes les étapes suivantes puissent y accéder. Nécessaire pour pouvoir sauvegarder les données scraper dans le repo à la fin du workflow. 
+        uses: actions/checkout@v4 
+
+      - name: Install Python #On installe Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install scraper #On installe le scraper, qui se trouve dans un package Python dédié, dont la documentation est ici : https://warn-scraper.readthedocs.io/en/latest/usage.html
+         run: pip install warn-scraper
+
+       - name: Scrape
+         run: warn-scraper ia --data-dir ./data/ #On scrape les données pour l'Iowa ("ia") et on stocke les résultats dans le dossier ./data/, à la racine du repo. 
+
+        - name: Commit and push #On va commit les données scrapées et les poussées dans GitHub. 
+          run:
+            git config user.name "GitHub Actions"
+            git config user.email "actions@users.noreply.github.com
+            git add ./data/
+            git commit -m "Latest data for Iowa" && git push || true
+
+       
+  

@@ -5,6 +5,9 @@ on:
   schedule:
   - cron: "0 0 * * * #Les actions seront lancées tous les jours à 00:00 UTC
 
+permissions: #On doit donner des permissions au job
+  contents: write 
+
 jobs:
   scrape:
     name: Scrape

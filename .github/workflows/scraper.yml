@@ -8,7 +8,7 @@ on:
         required: true
         default: 'ia' #Si pas d'input, on scrape les données pour l'Ohio. 
   schedule:
-  - cron: "0 0 * * *" #Les actions seront lancées tous les jours à 00:00 UTC
+  - cron: "0 0 * * *" #Les actions seront lancées tous les jours à 00:00 UTC 
 
 permissions: #On doit donner des permissions au job
   contents: write 

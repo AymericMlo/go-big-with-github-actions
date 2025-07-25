@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download artifact #On va télécharger les artifacts qu'on a précédemment stockés. 
-        uses: actions/fownload-artifact@v4
+        uses: actions/download-artifact@v4
         with:
           pattern: '*'
           path: artifacts/

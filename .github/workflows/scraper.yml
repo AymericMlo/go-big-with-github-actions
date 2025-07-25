@@ -20,16 +20,16 @@ jobs:
 
       - name: Install scraper #On installe le scraper, qui se trouve dans un package Python dédié, dont la documentation est ici : https://warn-scraper.readthedocs.io/en/latest/usage.html
          run: pip install warn-scraper
+         
+      - name: Scrape
+        run: warn-scraper ia --data-dir ./data/ #On scrape les données pour l'Iowa ("ia") et on stocke les résultats dans le dossier ./data/, à la racine du repo. 
 
-       - name: Scrape
-         run: warn-scraper ia --data-dir ./data/ #On scrape les données pour l'Iowa ("ia") et on stocke les résultats dans le dossier ./data/, à la racine du repo. 
-
-        - name: Commit and push #On va commit les données scrapées et les poussées dans GitHub. 
-          run:
-            git config user.name "GitHub Actions"
-            git config user.email "actions@users.noreply.github.com
-            git add ./data/
-            git commit -m "Latest data for Iowa" && git push || true
+      - name: Commit and push #On va commit les données scrapées et les poussées dans GitHub. 
+        run:
+          git config user.name "GitHub Actions"
+          git config user.email "actions@users.noreply.github.com
+          git add ./data/
+          git commit -m "Latest data for Iowa" && git push || true
 
        
   

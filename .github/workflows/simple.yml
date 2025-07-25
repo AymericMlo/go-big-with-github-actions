@@ -1,0 +1,13 @@
+name: First Action
+
+on: #Déterminer quand l'Action sera lancée
+  workflow_dispatch: #The action can be run manually from the monitoring panel. 
+
+jobs: #Ici, on dit au workflow ce qu'on veut qu'il fasse
+  hello: #Notre job se nomme hello. 
+    name: Say Hello
+    runs-on: ubuntu-latest #Pour chaque job on doit choisir quel serveur on souhaite utiliser. 
+    steps: #On assigne une première tache à notre job. 
+      - name: Hello world #Cette première tâche se nomme "Hello world"
+        run: echo "Hello world" #Nous écrivons "Hello world" dans la console grâce à la commande echo. 
+

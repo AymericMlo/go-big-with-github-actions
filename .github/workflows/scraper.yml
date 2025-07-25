@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
   - cron: "0 0 * * * #Les actions seront lancées tous les jours à 00:00 UTC
-  
+
 jobs:
   scrape:
     name: Scrape
@@ -24,10 +24,10 @@ jobs:
       - name: Scrape
         run: warn-scraper ia --data-dir ./data/ #On scrape les données pour l'Iowa ("ia") et on stocke les résultats dans le dossier ./data/, à la racine du repo. 
 
-      - name: Commit and push #On va commit les données scrapées et les poussées dans GitHub. 
-        run:
+      - name: Commit and push #On va commit les données scrappées et les pousser dans GitHub. 
+        run: |
           git config user.name "GitHub Actions"
-          git config user.email "actions@users.noreply.github.com
+          git config user.email "actions@users.noreply.github.com"
           git add ./data/
           git commit -m "Latest data for Iowa" && git push || true
 

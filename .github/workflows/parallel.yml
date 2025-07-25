@@ -1,0 +1,69 @@
+name: Matrix Scraper
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    name: Scrape
+    runs-on: ubuntu-latest
+    continue-on-error: true #On continue le scraping même si un scrape précédent échoue. 
+    strategy:
+      fail-fast: false #Même si le scraping d'un Etat échoue, on continue. 
+      matrix: #On définit la stratégie de matrice / matrix
+        state: [ca, ia, ny] #On précise la liste des Etats à scraper. 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install scraper
+        run: pip install warn-scraper
+
+      - name: Scrape
+        run: warn-scraper ${{ matrix.state }} --data-dir ./data/ #Ici, au lien d'input, on a mis matrix. 
+
+#Une fois qu'on a scrapé les données, on doit les stocker avant de les commit dans le repo. 
+#Pour cela, on utilise les Actions Artifacts : "An artifact is a file or collection of files produced during a workflow run."
+      - name: upload-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.state }}
+          path: ./data/${{ matrix.state }}.csv
+
+#On crée une seconde étape à notre action, celle du commit. 
+  commit:
+    name: Commit
+    runs-on: ubuntu-latest #Chaque job a besoin d'un serveur. 
+    needs: scrape #On doit tester le scraping, pour être sûr qu'il l'étape ne va pas être lancée avant la fin du scraping. 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifact #On va télécharger les artifacts qu'on a précédemment stockés. 
+        uses: actions/fownload-artifact@v4
+        with:
+          pattern: '*'
+          path: artifacts/
+
+      - name: Move #On va unpack les artifacts et les stocker dans le dossier data. 
+        run: |
+          mkdir data -p
+          mv artifcats/**/*.csv data/
+
+      - name: Save datestamp #On enregistre les données
+        run: date > ./data/latest-scrape.txt
+
+      - name: Commit and push #On commit les données pour de bon. 
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add ./data/
+          git commit -m "Latest data" && git push || true
